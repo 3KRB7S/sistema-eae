@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Expediente Administrativo Electrónico (EAE) | INDECOPI - Sede Regional Puno</title>
+  <meta name="description" content="Sistema de Expediente Administrativo Electrónico del INDECOPI. Consulta pública y gestión del Procedimiento Administrativo Sancionador (PAS) de la Comisión de Protección al Consumidor - Sede Regional Puno.">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN para garantizar la compatibilidad con Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            indecopi: {
+              DEFAULT: '#9E0059',
+              dark: '#800047',
+              light: '#B80068',
+              yellow: '#F5B800',
+              red: '#C8102E',
+              surface: '#F8FAFC',
+              border: '#E2E8F0',
+              text: '#0F172A',
+              muted: '#64748B'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Outfit', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Estilos del Sistema INDECOPI -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- QRCode.js para generación de códigos QR de verificación digital CVD -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+</head>
+<body class="bg-[#F8FAFC] text-[#0F172A] font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- =========================================================================
+       MODAL ONLOAD: AVISO ULTRA MINIMALISTA (DISCLAIMER)
+       ========================================================================= -->
+  <div class="legal-notice-backdrop" id="legalNoticeModal">
+    <div class="legal-notice-card" role="dialog" aria-modal="true" aria-labelledby="legalNoticeTitle">
+      <div class="legal-notice-header">
+        <div class="legal-notice-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F5B800" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+      </div>
+
+      <div class="legal-notice-body">
+        <h2 id="legalNoticeTitle">
+          Advertencia: Esto solo es un entorno de simulación académica
+        </h2>
+      </div>
+
+      <div class="legal-notice-footer">
+        <button class="btn-indecopi-disclaimer" id="btnAcceptLegalNotice">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       PANTALLA DE ACCESO: CONSULTA POR NÚMERO DE CUP (INDECOPI OFICIAL)
+       ========================================================================= -->
+  <div class="access-screen cup-screen-layout" id="accessScreen">
+    
+    <!-- BANNER SUPERIOR INSTITUCIONAL EN AMARILLO (#F5B800) -->
+    <div class="cup-top-banner">
+      <div class="cup-banner-inner">
+        <div class="cup-banner-icon">
+          <!-- Isotipo de la carpeta -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+          </svg>
+        </div>
+        <h1 class="cup-banner-title">CONSULTAS PÚBLICAS DE EXPEDIENTES</h1>
+      </div>
+    </div>
+
+    <!-- CONTENEDOR CENTRAL: TARJETA BLANCA Y MINIMALISTA -->
+    <div class="cup-center-wrapper">
+      <div class="cup-card-container">
+        
+        <!-- Recuadro magenta (#9E0059) con ícono y texto representativo de CUP -->
+        <div class="cup-magenta-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>CUP</span>
+        </div>
+
+        <!-- Tarjeta Central Blanca -->
+        <div class="cup-card">
+          <div class="cup-card-header">
+            <h2 class="cup-title">Consulta por número de CUP</h2>
+            <p class="cup-subtitle">Realice la consulta por número de CUP.</p>
+          </div>
+
+          <div class="cup-form-body">
+            <div class="cup-form-grid">
+              <!-- Campo 1: Número de CUP* -->
+              <div class="cup-field-group">
+                <label for="cupNumberInput" class="cup-field-label">Número de CUP*</label>
+                <input type="text" id="cupNumberInput" class="cup-input" placeholder="002837" autocomplete="off" maxlength="15">
+              </div>
+
+              <!-- Campo 2: Año de CUP* -->
+              <div class="cup-field-group">
+                <label for="cupYearInput" class="cup-field-label">Año de CUP*</label>
+                <input type="text" id="cupYearInput" class="cup-input cup-input-year" value="2026" readonly>
+              </div>
+            </div>
+
+            <!-- Verificación estilizada: Casilla "No soy un robot" -->
+            <div class="recaptcha-box-wrapper">
+              <div class="recaptcha-widget">
+                <label class="recaptcha-checkbox-label" for="recaptchaCheck">
+                  <input type="checkbox" id="recaptchaCheck" class="recaptcha-checkbox">
+                  <span class="recaptcha-custom-check"></span>
+                  <span class="recaptcha-text">No soy un robot</span>
+                </label>
+                <div class="recaptcha-badge">
+                  <div class="recaptcha-logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
+                      <path d="M24 4C12.95 4 4 12.95 4 24C4 35.05 12.95 44 24 44C35.05 44 44 35.05 44 24C44 12.95 35.05 4 24 4Z" fill="#1C64F2"/>
+                      <path d="M28 20L20 28L16 24" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <span class="recaptcha-brand-title">reCAPTCHA</span>
+                  <span class="recaptcha-legal-links">Privacidad - Condiciones</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mensaje de aviso sobrio -->
+            <div id="cupErrorMessage" class="cup-error-box hidden">
+              No se encontraron expedientes asociados al CUP ingresado.
+            </div>
+
+            <!-- Botones de Acción alineados a la derecha -->
+            <div class="cup-actions-row">
+              <button type="button" class="btn-cup-clean" id="btnCupLimpiar">
+                Limpiar
+              </button>
+              <button type="button" class="btn-cup-search" id="btnCupBuscar">
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FOOTER OFICIAL: BARRA EN GRIS INSTITUCIONAL (#6B7280) -->
+    <footer class="cup-official-footer">
+      <div class="cup-footer-container">
+        <div class="cup-footer-left">
+          <strong>Presidencia del Consejo de Ministros — INDECOPI</strong>
+          <p>Sede Central: Calle De la Prosa 104, San Borja, Lima • Horario de Atención: Lunes a Viernes de 8:30 a 16:30 hrs</p>
+        </div>
+        <div class="cup-footer-right">
+          <p>Central Telefónica: (01) 224-7777 • Línea gratuita: 0 800 4 4040</p>
+          <p>Servicio Oficial de Consultas Públicas de Expedientes Administrativos</p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+
+  <!-- =========================================================================
+       PANTALLA DE BÚSQUEDA DE EXPEDIENTES (POST-LOGIN)
+       ========================================================================= -->
+  <div class="search-screen hidden" id="searchScreen">
+    <div class="search-card">
+      <div class="search-header">
+        <div class="indecopi-seal-badge">
+          <span class="indecopi-acronym">INDECOPI</span>
+        </div>
+        <h2>BÚSQUEDA DE EXPEDIENTE ELECTRÓNICO</h2>
+        <p class="search-subtitle">Procedimiento Administrativo Sancionador (PAS) — Protección al Consumidor</p>
+      </div>
+
+      <div class="search-form">
+        <p class="form-hint">
+          Ingrese la nomenclatura del expediente administrativo sancionador para visualizar la cronología de piezas procesales:
+        </p>
+
+        <div class="form-group">
+          <label for="expedienteSearchInput">N.° de Expediente Administrativo:</label>
+          <input type="text" id="expedienteSearchInput" class="form-control text-large" placeholder="14-2026/CPC-INDECOPI-PUN" value="14-2026/CPC-INDECOPI-PUN" autocomplete="off" style="text-align: center; font-weight: 700; font-size: 1.15rem; letter-spacing: 0.5px;">
+        </div>
+
+        <div class="case-quick-preview">
+          <div class="preview-badge">CASO EN CURSO</div>
+          <div class="preview-title">D******* P**** C******* vs. BANCO BBVA PERÚ S.A.</div>
+          <div class="preview-meta">Materia: Falta de Idoneidad (Art. 19 Ley 29571) • Intermediación Monetaria</div>
+        </div>
+
+        <button class="btn-indecopi-primary btn-block" id="btnConsultarExpediente" style="margin-top: 18px;">
+          Consultar Actuaciones del Expediente
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       APLICACIÓN PRINCIPAL: PORTAL DE EXPEDIENTE ADMINISTRATIVO INDECOPI
+       ========================================================================= -->
+  <div class="app-container hidden" id="appContainer">
+    
+    <!-- CABECERA INSTITUCIONAL INDECOPI -->
+    <header class="app-header">
+      <div class="header-branding">
+        <div class="header-logo-container">
+          <div class="header-logo-shield">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9E0059" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div class="header-logo-text">
+            <span class="brand-top">REPÚBLICA DEL PERÚ</span>
+            <span class="brand-institution">INDECOPI</span>
+          </div>
+        </div>
+        <div class="header-titles">
+          <h1>SISTEMA DE EXPEDIENTE ADMINISTRATIVO ELECTRÓNICO (EAE)</h1>
+          <span>Comisión de Protección al Consumidor — Sede Regional Puno</span>
+        </div>
+      </div>
+
+      <!-- NAVEGACIÓN PRINCIPAL (TABS) -->
+      <nav class="header-nav">
+        <button class="nav-btn active" id="btnTabTimeline" onclick="switchMainTab('timeline')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Actuaciones del PAS
+        </button>
+        <button class="nav-btn" id="btnTabReniec" onclick="switchMainTab('reniec')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          Interoperabilidad PIDE
+        </button>
+      </nav>
+
+      <!-- RELOJ OFICIAL EN TIEMPO REAL Y ACCIÓN DE SALIDA -->
+      <div class="header-user-info">
+        <div class="header-system-clock" id="systemClockBox">
+          <span class="clock-label">Fecha y Hora Oficial del Sistema</span>
+          <div class="clock-time-group">
+            <span class="clock-date" id="currentDateDisplay">--/--/----</span>
+            <span class="clock-time" id="serverTimeDisplay">--:--:-- -05:00 (Sello de Tiempo INDECOPI)</span>
+          </div>
+        </div>
+        <button class="btn-logout" id="btnLogout" title="Cerrar Sesión Segura">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span class="logout-text">Salir</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CINTILLO IDENTIFICADOR DE EXPEDIENTE -->
+    <div class="cintillo-expediente-bar">
+      <div class="cintillo-left">
+        <span class="cintillo-indicator-dot"></span>
+        <span class="cintillo-title" id="cintilloExpedienteTitle">EXPEDIENTE ADMINISTRATIVO ELECTRÓNICO N.° 14-2026/CPC-INDECOPI-PUN</span>
+      </div>
+      <div class="cintillo-right">
+        <span class="cintillo-organo">Órgano Resolutivo: Comisión de Protección al Consumidor - Puno</span>
+      </div>
+    </div>
+
+    <!-- CUERPO DE LA APP -->
+    <main class="app-body">
+      
+      <!-- =====================================================================
+           TAB 1: LÍNEA DE TIEMPO DEL EXPEDIENTE ADMINISTRATIVO SANCIONADOR
+           ===================================================================== -->
+      <section class="tab-content" id="tabContentTimeline">
+        
+        <div class="timeline-layout">
+          <!-- Columna Izquierda: Ficha Resumen del Expediente PAS (Información Exclusiva) -->
+          <div class="case-info-sidebar">
+            <div class="sidebar-card">
+              <div class="sidebar-card-header">
+                <h3>Ficha Técnica del Expediente</h3>
+                <span class="sidebar-card-tag">PAS REGISTRADO</span>
+              </div>
+              
+              <div class="info-list">
+                <div class="info-item">
+                  <span class="info-label">N.° de Expediente:</span>
+                  <span class="info-value text-bold text-[#9E0059]" id="caseNumberSidebar">14-2026/CPC-INDECOPI-PUN</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Materia Principal:</span>
+                  <span class="info-value font-medium">Falta de Idoneidad en el Servicio Financiero (Art. 19 Ley 29571)</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Actividad Económica:</span>
+                  <span class="info-value">Intermediación Monetaria (Operaciones no reconocidas - Transferencias no autorizadas)</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Órgano Resolutivo:</span>
+                  <span class="info-value">Comisión de Protección al Consumidor — Sede Regional Puno</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Secretaria Técnica:</span>
+                  <span class="info-value text-bold">Waldir Crystiam Zanabria Ortega</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Denunciante:</span>
+                  <div class="info-value text-bold text-[#9E0059]">
+                    D******* P**** C******* <span class="tag-anon" title="Protegido por Ley N.° 29733">[LEY N.° 29733]</span>
+                    <span class="block text-[11px] font-mono text-slate-500 mt-0.5">DNI disociado: 01******</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Denunciado:</span>
+                  <div class="info-value text-bold text-[#C8102E]">
+                    BANCO BBVA PERÚ SOCIEDAD ANÓNIMA
+                    <span class="block text-[11px] font-mono text-slate-500 mt-0.5">RUC: 20100130204 (Activo / Habido)</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Fecha de Presentación:</span>
+                  <span class="info-value font-medium">23/01/2026</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Estado Procesal:</span>
+                  <span class="info-value status-tag-final">Sanción Firme en 1ra Instancia — Res. Final N° 087-2026 (Multa 22.97 UIT - Medida Correctiva)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Tarjetas Modernas de la Secuencia del PAS -->
+          <div class="timeline-panel">
+            <div class="panel-header">
+              <div>
+                <h3>Secuencia Cronológica de Actos del PAS</h3>
+                <p class="panel-subtitle">Expediente N.° 14-2026/CPC-INDECOPI-PUN • 13 Actuaciones Procesales Formales</p>
+              </div>
+              <div class="panel-actions">
+                <span class="timeline-counter">13 Actuaciones Registradas (Fojas 001 - 288)</span>
+                <!-- Botón de subir NUEVA pieza procesal: SOLO visible para Personal INDECOPI -->
+                <button class="btn-indecopi-action rbac-staff-only hidden" id="btnAddNewDocumentStaff" onclick="abrirSelectorSubida(null)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  Incorporar Pieza Procesal
+                </button>
+              </div>
+            </div>
+
+            <!-- Contenedor de las tarjetas rediseñadas del PAS -->
+            <div class="cards-timeline-container" id="timelineContainer">
+              <!-- Cargado dinámicamente por JavaScript -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================================
+           TAB 2: CENTRAL DE NOTIFICACIONES ELECTRÓNICAS (CASILLA CUE)
+           ===================================================================== -->
+      <section class="tab-content hidden" id="tabContentNotifications">
+        
+        <div class="notifications-layout">
+          <div class="notifications-header">
+            <div class="notif-header-title">
+              <div class="flex items-center gap-3">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9E0059" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <div>
+                  <h2>Casilla Única Electrónica (CUE) — INDECOPI</h2>
+                  <p>Módulo de Notificaciones Oficiales conforme al Decreto Legislativo N.° 1308 y Directiva de Notificaciones Electrónicas.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="notif-actions">
+              <div class="notif-filter-bar">
+                <span class="filter-label">Filtrar por Administrado:</span>
+                <button class="btn-filter-notif active" id="btnFilterNotifAll" onclick="filterNotifications('all')">Todos</button>
+                <button class="btn-filter-notif" id="btnFilterNotifDem" onclick="filterNotifications('denunciante')">Denunciante (D******* P**** C*******)</button>
+                <button class="btn-filter-notif" id="btnFilterNotifDep" onclick="filterNotifications('denunciado')">Denunciado (BANCO BBVA PERÚ S.A.)</button>
+              </div>
+
+              <!-- Botón para Registrar Cédula: SOLO visible para Personal INDECOPI -->
+              <button class="btn-indecopi-action rbac-staff-only hidden" id="btnUploadNotification" onclick="abrirSelectorSubidaNotif()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Registrar Cédula en Casilla CUE
+              </button>
+            </div>
+          </div>
+
+          <!-- Cuadrícula de Cédulas en Casilla CUE -->
+          <div class="notifications-grid" id="notificationsGrid">
+            <!-- Cargado dinámicamente por JavaScript -->
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================================
+           TAB 3: PLATAFORMA DE INTEROPERABILIDAD PIDE (SUNAT & RENIEC)
+           ===================================================================== -->
+      <section class="tab-content hidden" id="tabContentReniec">
+        
+        <div class="reniec-layout">
+          <div class="reniec-header">
+            <div class="flex items-center gap-3">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9E0059" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <div>
+                <h2>Plataforma de Interoperabilidad del Estado Peruano (PIDE)</h2>
+                <p>Servicios de consulta en tiempo real conectados con RENIEC (Personas Naturales) y SUNAT (Personas Jurídicas). Decreto Supremo N.° 083-2011-PCM.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selector de Tipo de Consulta PIDE -->
+          <div class="pide-selector-tabs">
+            <button class="pide-tab-btn active" id="tabBtnPideReniec" onclick="switchPideTab('reniec')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Consulta de Identidad RENIEC (Denunciante)
+            </button>
+            <button class="pide-tab-btn" id="tabBtnPideSunat" onclick="switchPideTab('sunat')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                <line x1="9" y1="22" x2="9" y2="22.01"></line>
+                <line x1="15" y1="22" x2="15" y2="22.01"></line>
+                <line x1="9" y1="6" x2="9" y2="6.01"></line>
+                <line x1="15" y1="6" x2="15" y2="6.01"></line>
+                <line x1="9" y1="10" x2="9" y2="10.01"></line>
+                <line x1="15" y1="10" x2="15" y2="10.01"></line>
+                <line x1="9" y1="14" x2="9" y2="14.01"></line>
+                <line x1="15" y1="14" x2="15" y2="14.01"></line>
+                <line x1="9" y1="18" x2="9" y2="18.01"></line>
+                <line x1="15" y1="18" x2="15" y2="18.01"></line>
+              </svg>
+              Consulta de Personería SUNAT RUC (Denunciado BBVA)
+            </button>
+          </div>
+
+          <!-- Sección RENIEC -->
+          <div id="pideSectionReniec">
+            <div class="reniec-search-box">
+              <div class="search-form-row">
+                <div class="form-group flex-1">
+                  <label for="reniecDniSearch">N.° de Documento Nacional de Identidad (DNI):</label>
+                  <div class="input-search-wrapper">
+                    <input type="text" id="reniecDniSearch" class="form-control text-large" placeholder="Escriba DNI del denunciante (Ej. 01845814)...">
+                    <button class="btn-search-reniec" id="btnReniecSearch">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      Consultar PIDE-RENIEC
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Sugerencias Rápidas -->
+              <div class="quick-dni-suggests">
+                <span class="suggest-label">Consulta del PAS:</span>
+                <button class="btn-suggest-dni" onclick="fillReniecSearch('01845814')">D******* P**** C******* (DNI: 01******)</button>
+                <button class="btn-suggest-dni" onclick="fillReniecSearch('41859620')">Abg. Waldir Crystiam Zanabria (Secretario Técnico / Instructor)</button>
+              </div>
+            </div>
+
+            <!-- Contenedor Ficha Biométrica -->
+            <div class="reniec-result-container" id="reniecResultContainer">
+              <div class="reniec-empty-state" id="reniecEmptyState">
+                <div class="reniec-shield-watermark" style="display:flex; justify-content:center; margin-bottom:8px;">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9E0059" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.35">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                <h3>Ingrese un DNI o seleccione el administrado denunciante</h3>
+                <p>El sistema mostrará la ficha técnica PIDE-RENIEC aplicando la anonimización de datos sensibles exigida por la Ley N.° 29733.</p>
+              </div>
+
+              <!-- Ficha Biométrica Activa -->
+              <div class="biometric-card hidden" id="reniecBiometricCard">
+                <div class="bio-card-header">
+                  <div class="bio-header-seal">REPÚBLICA DEL PERÚ • PLATAFORMA PIDE</div>
+                  <h4>REGISTRO NACIONAL DE IDENTIFICACIÓN Y ESTADO CIVIL</h4>
+                  <span class="bio-card-subtitle">Ficha de Verificación de Identidad — Aplicación Ley N.° 29733</span>
+                </div>
+                
+                <div class="bio-card-body">
+                  <div class="bio-photo-column">
+                    <div class="bio-photo-frame">
+                      <img id="bioPhoto" src="" alt="Foto Biométrica">
+                    </div>
+                    <div class="bio-status-badge">REGISTRO ACTIVO</div>
+                    <span class="text-[10px] text-center text-slate-500 mt-1 block">Validado vía PIDE</span>
+                  </div>
+
+                  <div class="bio-details-column">
+                    <div class="bio-grid">
+                      <div class="bio-field">
+                        <span class="bio-label">N.° DNI:</span>
+                        <span class="bio-value text-bold text-[#9E0059]" id="bioDni">01****** <span class="tag-anon">[DISOCIADO]</span></span>
+                      </div>
+                      <div class="bio-field">
+                        <span class="bio-label">Apellidos:</span>
+                        <span class="bio-value text-bold" id="bioApellidos">P**** C*******</span>
+                      </div>
+                      <div class="bio-field">
+                        <span class="bio-label">Nombres:</span>
+                        <span class="bio-value text-bold" id="bioNombres">D*******</span>
+                      </div>
+                      <div class="bio-field">
+                        <span class="bio-label">Fecha Nacimiento:</span>
+                        <span class="bio-value" id="bioFechaNac">**/**/1978 <span class="tag-anon">[RESERVADO]</span></span>
+                      </div>
+                      <div class="bio-field">
+                        <span class="bio-label">Sexo:</span>
+                        <span class="bio-value" id="bioSexo">MASCULINO</span>
+                      </div>
+                      <div class="bio-field">
+                        <span class="bio-label">Estado Civil:</span>
+                        <span class="bio-value" id="bioEstadoCivil">CASADO</span>
+                      </div>
+                      <div class="bio-field bio-full-width">
+                        <span class="bio-label">Domicilio Fiscal / Procesal:</span>
+                        <span class="bio-value" id="bioDireccion">Jr. Tacna N.° ***, Barrio Bellavista, Puno <span class="tag-anon">[DOMICILIO DISOCIADO - LEY 29733]</span></span>
+                      </div>
+                      <div class="bio-field">
+                        <span class="bio-label">Ubigeo:</span>
+                        <span class="bio-value" id="bioGrupoVotacion">210101 (PUNO - PUNO)</span>
+                      </div>
+                      <div class="bio-field">
+                        <span class="bio-label">Fecha Emisión DNI:</span>
+                        <span class="bio-value" id="bioFechaEmision">12/03/2021</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bio-signature-column">
+                    <span class="bio-label text-center">Firma Digitalizada</span>
+                    <div class="bio-signature-frame">
+                      <div class="bio-sig-path" id="bioSignature">D. P**** Ch.</div>
+                    </div>
+                    <span class="text-[10px] text-center text-slate-500 mt-2 block">Protegido por Ley 29733</span>
+                  </div>
+                </div>
+
+                <div class="bio-card-footer">
+                  <span>DOCUMENTO INFORMATIVO DE INTEROPERABILIDAD PARA EL EXPEDIENTE N.° 14-2026/CPC-INDECOPI-PUN</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección SUNAT -->
+          <div id="pideSectionSunat" class="hidden">
+            <div class="reniec-search-box">
+              <div class="search-form-row">
+                <div class="form-group flex-1">
+                  <label for="sunatRucSearch">N.° de Registro Único de Contribuyentes (RUC):</label>
+                  <div class="input-search-wrapper">
+                    <input type="text" id="sunatRucSearch" class="form-control text-large" placeholder="20100130204" value="20100130204">
+                    <button class="btn-search-reniec" id="btnSunatSearch">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      Consultar PIDE-SUNAT
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="quick-dni-suggests">
+                <span class="suggest-label">Entidad Denunciada en el PAS:</span>
+                <button class="btn-suggest-dni" onclick="fillSunatSearch('20100130204')">BANCO BBVA PERÚ S.A. (RUC: 20100130204)</button>
+              </div>
+            </div>
+
+            <div class="reniec-result-container">
+              <div class="biometric-card" id="sunatResultCard">
+                <div class="bio-card-header" style="background: linear-gradient(135deg, #9E0059 0%, #800047 100%);">
+                  <div class="bio-header-seal">SUPERINTENDENCIA NACIONAL DE ADUANAS Y DE ADMINISTRACIÓN TRIBUTARIA — SUNAT</div>
+                  <h4>CONSULTA RUC — PERSONERÍA JURÍDICA DENUNCIADA</h4>
+                  <span class="bio-card-subtitle">Interoperabilidad PIDE para el PAS N.° 14-2026/CPC-INDECOPI-PUN</span>
+                </div>
+
+                <div class="bio-card-body" style="grid-template-columns: 1fr;">
+                  <div class="bio-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="bio-field">
+                      <span class="bio-label">Número de RUC:</span>
+                      <span class="bio-value text-bold text-[#9E0059]">20100130204</span>
+                    </div>
+                    <div class="bio-field">
+                      <span class="bio-label">Razón Social:</span>
+                      <span class="bio-value text-bold text-[#C8102E]">BANCO BBVA PERÚ SOCIEDAD ANÓNIMA</span>
+                    </div>
+                    <div class="bio-field">
+                      <span class="bio-label">Tipo de Contribuyente:</span>
+                      <span class="bio-value">SOCIEDAD ANÓNIMA (BANCARIA)</span>
+                    </div>
+                    <div class="bio-field">
+                      <span class="bio-label">Estado del Contribuyente:</span>
+                      <span class="bio-value"><span class="status-pill status-pill-active">ACTIVO</span></span>
+                    </div>
+                    <div class="bio-field">
+                      <span class="bio-label">Condición del Domicilio:</span>
+                      <span class="bio-value"><span class="status-pill status-pill-active">HABIDO</span></span>
+                    </div>
+                    <div class="bio-field">
+                      <span class="bio-label">Actividad Económica Principal:</span>
+                      <span class="bio-value font-medium">6419 - Otros tipos de intermediación monetaria</span>
+                    </div>
+                    <div class="bio-field bio-full-width">
+                      <span class="bio-label">Domicilio Fiscal Notificado:</span>
+                      <span class="bio-value">Av. República de Panamá N.° 3055, San Isidro, Lima / Agencia Puno: Jr. Lima N.° 410, Puno</span>
+                    </div>
+                    <div class="bio-field">
+                      <span class="bio-label">Casilla Electrónica CUE:</span>
+                      <span class="bio-value font-mono font-bold text-[#9E0059]">BBVA-LIMA-00412</span>
+                    </div>
+                    <div class="bio-field">
+                      <span class="bio-label">Sistema de Emisión Electrónica:</span>
+                      <span class="bio-value">FACTURA / BOLETA / CONSTANCIA ELECTRÓNICA</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bio-card-footer">
+                  <span>VALIDACIÓN TÉCNICA DE PERSONERÍA JURÍDICA PARA LA COMISIÓN DE PROTECCIÓN AL CONSUMIDOR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA INSTITUCIONAL -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <strong>INSTITUTO NACIONAL DE DEFENSA DE LA COMPETENCIA Y DE LA PROTECCIÓN DE LA PROPIEDAD INTELECTUAL — INDECOPI</strong>
+        <p>Sede Regional Puno: Jr. Arequipa N.° 958, Puno, Perú • Central Telefónica: (01) 224-7777 / Línea Gratuita Regiones: 0 800 4 4040</p>
+      </div>
+      <div class="footer-right">
+        <span>© 2026 INDECOPI • Presidencia del Consejo de Ministros (PCM) • República del Perú</span>
+      </div>
+    </footer>
+
+  </div>
+
+
+  <!-- =========================================================================
+       VISOR DE DOCUMENTOS ELECTRÓNICOS A4 (MODAL DE DERECHO INFORMÁTICO)
+       ========================================================================= -->
+  <div class="doc-viewer-modal hidden" id="docViewerModal">
+    <div class="modal-content-wrapper">
+      
+      <!-- Barra de herramientas superior del visor -->
+      <div class="viewer-toolbar">
+        <div class="viewer-toolbar-left">
+          <span class="viewer-doc-badge" id="viewerDocIndex">FOJAS 001 - 042</span>
+          <h3 class="viewer-doc-title" id="viewerDocTitle">Nombre de la Pieza Procesal</h3>
+        </div>
+        <div class="viewer-toolbar-actions">
+          <button class="btn-viewer-tool inline-flex items-center gap-1.5" id="btnToggleViewerSidebar" title="Mostrar u ocultar Ficha Técnica del Acto">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span id="btnToggleSidebarText">Ficha del Acto</span>
+          </button>
+          <span class="viewer-mode-tag" id="viewerRoleTag">Visor Oficial PDF</span>
+          <button class="btn-viewer-tool inline-flex items-center gap-1.5" id="btnModalPrint" title="Imprimir Documento PDF">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Imprimir
+          </button>
+          <button class="btn-viewer-tool inline-flex items-center gap-1.5" id="btnModalDownload" title="Descargar Documento PDF">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Descargar
+          </button>
+          <button class="btn-close-viewer" id="btnModalClose" title="Cerrar Visor">&times;</button>
+        </div>
+      </div>
+
+      <!-- Estructura Dividida del Visor: PDF (72%) y Panel de Metadatos Procesales (28%) -->
+      <div class="viewer-split-container" id="viewerSplitContainer">
+        <!-- Lado Izquierdo: Visor PDF Oficial -->
+        <div class="viewer-pdf-pane" id="viewerPdfPane">
+          <iframe id="pdfViewerFrame" class="pdf-frame-viewer" src="" title="Visor Oficial de Documento PDF"></iframe>
+          <div class="a4-document-container" id="legalDocumentContent" style="display: none;"></div>
+        </div>
+
+        <!-- Lado Derecho: Ficha Técnica Lateral del Documento (Metadatos Procesales) -->
+        <aside class="viewer-metadata-sidebar" id="viewerMetadataSidebar">
+          <div class="meta-sidebar-header">
+            <div class="flex items-center justify-between w-full">
+              <div>
+                <h4 class="meta-sidebar-title">Metadatos Procesales</h4>
+                <span class="meta-sidebar-subtitle">Expediente N.° 14-2026/CPC-INDECOPI-PUN</span>
+              </div>
+              <span class="meta-badge-act" id="viewerMetaActBadge">Acto 01 • Escrito</span>
+            </div>
+          </div>
+
+          <div class="meta-sidebar-scroll">
+            <!-- Resumen Factual y Legal -->
+            <div class="meta-group">
+              <span class="meta-label">Resumen Procesal y Sustento Legal</span>
+              <p class="meta-desc-text" id="viewerMetaResumen">Cargando información del acto procesal...</p>
+            </div>
+
+            <!-- Sujetos Procesales -->
+            <div class="meta-group">
+              <span class="meta-label">Remitente Formal</span>
+              <div class="meta-party-box" id="viewerMetaRemitente">—</div>
+            </div>
+
+            <div class="meta-group">
+              <span class="meta-label">Destinatario</span>
+              <div class="meta-party-box" id="viewerMetaDestinatario">—</div>
+            </div>
+
+            <!-- Estado Procesal / Diligenciamiento -->
+            <div class="meta-group">
+              <span class="meta-label">Estado de Diligenciamiento y Notificación</span>
+              <div>
+                <span class="meta-status-pill" id="viewerMetaEstado">Registrado</span>
+              </div>
+            </div>
+
+            <!-- Código de Verificación Digital (CVD) -->
+            <div class="meta-group">
+              <span class="meta-label">Código de Verificación Digital (CVD)</span>
+              <div class="meta-cvd-container">
+                <span class="meta-cvd-code" id="viewerMetaCvd">0000-0000-0000-0000</span>
+                <button type="button" class="btn-copy-cvd" id="btnCopyCvd" title="Copiar código al portapapeles">
+                  <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                  <span id="btnCopyCvdText">Copiar</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sello de Tiempo y Firma Digital Calificada -->
+            <div class="meta-security-box">
+              <div class="meta-security-title">
+                <svg class="w-4 h-4 text-[#9E0059] inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <span>Firma Digital Calificada (Ley N.° 27269)</span>
+              </div>
+              <p class="meta-security-note">Documento electrónico con valor probatorio equivalente al papel. Certificación de firma digital oficial INDECOPI (-05:00 UTC).</p>
+              <div class="meta-security-row">
+                <span class="meta-sec-label">Firmante:</span>
+                <span class="meta-sec-val" id="viewerMetaFirmante">—</span>
+              </div>
+              <div class="meta-security-row">
+                <span class="meta-sec-label">Fecha y Sello:</span>
+                <span class="meta-sec-val font-mono" id="viewerMetaFechaFirma">—</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Pie de página del visor -->
+      <div class="viewer-bottom-bar">
+        <div class="viewer-integrity-info flex items-center gap-1.5">
+          <span class="integrity-icon text-[#9E0059]">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          </span>
+          <span>EXPEDIENTE ADMINISTRATIVO ELECTRÓNICO • CERTIFICACIÓN Y VALOR PROBATORIO (LEY N.° 27269)</span>
+        </div>
+        <div class="viewer-page-counter" id="viewerPageCounter">Documento Oficial INDECOPI</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       MODAL PARA INCORPORAR NUEVAS ACTUACIONES (SOLO PERSONAL INDECOPI)
+       ========================================================================= -->
+  <div class="doc-viewer-modal hidden" id="uploadTimelineModal">
+    <div class="modal-dialog-box">
+      <div class="dialog-header">
+        <div class="dialog-title-wrapper flex items-center gap-3">
+          <div class="p-2 bg-[#FDF2F8] rounded text-[#9E0059]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+          </div>
+          <div>
+            <h3>Incorporar Actuación Procesal al PAS</h3>
+            <p class="dialog-subtitle">Facultad exclusiva de la Secretaría Técnica — Sede Regional Puno</p>
+          </div>
+        </div>
+        <button class="btn-close-dialog" onclick="cerrarModalSubidaTimeline()">&times;</button>
+      </div>
+      
+      <div class="dialog-body">
+        <div class="form-group">
+          <label for="timelineUploadTitle">Denominación del Acto o Documento:</label>
+          <input type="text" id="timelineUploadTitle" class="form-control" placeholder="Ej. INFORME TÉCNICO COMPLEMENTARIO N.° 02">
+        </div>
+
+        <div class="form-group">
+          <label for="timelineUploadFojas">Fojas Asignadas en el Expediente:</label>
+          <input type="text" id="timelineUploadFojas" class="form-control" placeholder="Ej. Fojas 059 - 065" value="Fojas 059 - 065">
+        </div>
+
+        <div class="form-group">
+          <label for="timelineUploadDesc">Sumilla / Resumen del Proveído:</label>
+          <textarea id="timelineUploadDesc" class="form-control" rows="3" placeholder="Resumen del contenido procesal y fundamentos..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Archivo Digital (.PDF, Imagen o Texto):</label>
+          <div class="file-picker-wrapper">
+            <button class="btn-indecopi-action flex items-center gap-1.5" type="button" onclick="activarSelectorArchivoTimeline()">
+              <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              Seleccionar Archivo Local...
+            </button>
+            <span id="timelineSelectedFileName" class="file-picker-name">Ningún archivo seleccionado</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dialog-footer">
+        <button class="btn-cancel" onclick="cerrarModalSubidaTimeline()">Cancelar</button>
+        <button class="btn-indecopi-primary" id="btnConfirmTimelineUpload" onclick="confirmarSubidaTimeline()" disabled>
+          Confirmar e Incorporar al Expediente
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       MODAL PARA REGISTRAR CÉDULA EN CASILLA CUE (SOLO PERSONAL INDECOPI)
+       ========================================================================= -->
+  <div class="doc-viewer-modal hidden" id="uploadNotifModal">
+    <div class="modal-dialog-box">
+      <div class="dialog-header">
+        <div class="dialog-title-wrapper flex items-center gap-3">
+          <div class="p-2 bg-[#FDF2F8] rounded text-[#9E0059]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          </div>
+          <div>
+            <h3>Registrar Cédula de Notificación en Casilla CUE</h3>
+            <p class="dialog-subtitle">Emisión conforme al Decreto Legislativo N.° 1308</p>
+          </div>
+        </div>
+        <button class="btn-close-dialog" onclick="cerrarModalSubidaNotif()">&times;</button>
+      </div>
+      
+      <div class="dialog-body">
+        <div class="form-group">
+          <label for="notifUploadTitle">Acto Administrativo Notificado:</label>
+          <input type="text" id="notifUploadTitle" class="form-control" value="Cédula de Depósito de Resolución">
+        </div>
+        
+        <div class="form-group">
+          <label for="notifUploadRecipient">Administrado Destinatario:</label>
+          <select id="notifUploadRecipient" class="form-control">
+            <option value="denunciante">Denunciante: D******* P**** C******* (Casilla Personal)</option>
+            <option value="denunciado">Denunciado: BANCO BBVA PERÚ S.A. (Casilla CUE BBVA-LIMA-00412)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Documento de la Cédula / Constancia Digital:</label>
+          <div class="file-picker-wrapper">
+            <button class="btn-indecopi-action flex items-center gap-1.5" type="button" onclick="activarSelectorArchivoNotif()">
+              <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              Seleccionar Cédula Firmada...
+            </button>
+            <span id="notifSelectedFileName" class="file-picker-name">Ningún archivo seleccionado</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dialog-footer">
+        <button class="btn-cancel" onclick="cerrarModalSubidaNotif()">Cancelar</button>
+        <button class="btn-indecopi-primary" id="btnConfirmNotifUpload" onclick="confirmarSubidaNotif()" disabled>
+          Firmar y Depositar en Casilla CUE
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       ASISTENTE VIRTUAL INDECOPI (CHATBOT IA INDECOPI - PROTECCIÓN AL CONSUMIDOR)
+       ========================================================================= -->
+  <div class="sanibot-widget" id="sanibotWidget">
+    
+    <!-- Ventana de Chat (Oculta por defecto) -->
+    <div class="sanibot-chat-box hidden" id="sanibotChatBox">
+      
+      <div class="chat-header">
+        <div class="chat-avatar-mini flex items-center justify-center bg-white/20 rounded-full w-8 h-8">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2" stroke-width="2"></rect><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path d="M12 6v5" stroke-width="2"></path><circle cx="9" cy="15" r="1" fill="currentColor"></circle><circle cx="15" cy="15" r="1" fill="currentColor"></circle><path d="M9 18h6" stroke-width="2" stroke-linecap="round"></path></svg>
+        </div>
+        <div class="chat-header-info">
+          <h4>ChatBot IA Indecopi</h4>
+          <span>Asistente del Expediente Electrónico</span>
+        </div>
+        <button class="btn-close-chat" id="btnCloseChat">&times;</button>
+      </div>
+
+      <!-- Mensajes del Chat -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-bubble bot">
+          ¡Bienvenido! Soy el <strong>ChatBot IA Indecopi</strong>, asistente técnico del Sistema de Expediente Administrativo Electrónico.
+          <br><br>
+          Puedo orientarle sobre las 6 actuaciones del <strong>Expediente N.° 14-2026/CPC-INDECOPI-PUN</strong>, el marco normativo integral (<strong>Ley N.° 29571</strong>, <strong>TUO de la Ley N.° 27444</strong>, <strong>D. Leg. N.° 1412</strong> y <strong>Ley N.° 29733</strong>), medidas correctivas o las notificaciones en la Casilla CUE.
+          <br><br>
+          ¿En qué puedo orientarle el día de hoy?
+        </div>
+      </div>
+
+      <!-- Entrada de Texto -->
+      <div class="chat-input-area">
+        <input type="text" id="chatInputText" placeholder="Consulte sobre el expediente, resoluciones o base legal..." autocomplete="off">
+        <button id="btnChatSend" title="Enviar consulta" class="flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+      </div>
+
+      <!-- Sugerencias de Preguntas Frecuentes -->
+      <div class="chat-suggestions">
+        <button class="suggest-btn" onclick="sendSuggestedMessage('¿Cuál es la materia del expediente 14-2026?')">Materia del PAS</button>
+        <button class="suggest-btn" onclick="sendSuggestedMessage('¿Cuál es el marco normativo aplicable al PAS?')">Marco Normativo</button>
+        <button class="suggest-btn" onclick="sendSuggestedMessage('¿Qué sanción y medida correctiva se impuso?')">Sanción y Medidas</button>
+        <button class="suggest-btn" onclick="sendSuggestedMessage('¿Cómo aplican la Ley 27444, D. Leg. 1412 y Ley 29733?')">LPAG, PIDE y Datos</button>
+      </div>
+
+    </div>
+
+    <!-- Botón Flotante del Asistente -->
+    <div class="sanibot-trigger-btn" id="sanibotTriggerBtn" title="Consultar con ChatBot IA Indecopi">
+      <div class="sanibot-avatar-container">
+        <span class="sanibot-badge-icon flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2" stroke-width="2"></rect><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path d="M12 6v5" stroke-width="2"></path><circle cx="9" cy="15" r="1" fill="currentColor"></circle><circle cx="15" cy="15" r="1" fill="currentColor"></circle><path d="M9 18h6" stroke-width="2" stroke-linecap="round"></path></svg>
+        </span>
+        <span class="sanibot-badge-pulse"></span>
+      </div>
+      <div class="sanibot-tooltip">¿Consultas sobre el PAS? ChatBot IA Indecopi</div>
+    </div>
+
+  </div>
+
+
+  <!-- Inputs tipo file ocultos globales -->
+  <input type="file" id="globalTimelineFileInput" accept=".pdf,image/*,.docx,.txt" class="hidden">
+  <input type="file" id="globalNotifFileInput" accept=".pdf,image/*,.docx,.txt" class="hidden">
+
+  <!-- Script principal de la lógica institucional -->
+  <script src="app.js" defer></script>
+
+</body>
+</html>
